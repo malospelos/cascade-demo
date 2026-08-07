@@ -1,1 +1,86 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>CASCADE Demo</title><style>body{margin:0;background:#111318;color:#f5f7fb;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center}.app{width:min(94vw,520px)}h1{text-align:center;letter-spacing:.18em;margin:0 0 8px}.sub{text-align:center;color:#9ca7b8;margin-bottom:16px}.stats{display:flex;gap:8px;margin-bottom:12px}.stat{flex:1;background:#232936;border-radius:14px;padding:10px;text-align:center}.stat b{display:block;font-size:22px}.stat span{font-size:11px;color:#9ca7b8}.board{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;background:#191d25;padding:12px;border-radius:20px}.cell{aspect-ratio:1;border-radius:16px;box-shadow:inset 0 2px 0 #ffffff33,inset 0 -4px 0 #00000022;transition:.18s;touch-action:manipulation}.cell:active{transform:scale(.9)}.c0{background:#ef4355}.c1{background:#347eeb}.c2{background:#f0b723}.c3{background:#3abb5f}.c4{background:#824de0}.c5{background:#eb7422}.boom{transform:scale(.08);opacity:0}.msg{text-align:center;min-height:70px;padding-top:14px}.msg b{display:block;font-size:18px}.msg small{color:#9ca7b8}button{width:100%;margin-top:10px;border:0;border-radius:14px;padding:14px;font-weight:700;background:#f5f7fb;color:#111318;font-size:16px}.note{text-align:center;color:#9ca7b8;font-size:12px;margin-top:10px}</style></head><body><div class="app"><h1>CASCADE</h1><div class="sub">Un toque. Una reacción en cadena.</div><div class="stats"><div class="stat"><b id="score">0</b><span>PUNTOS</span></div><div class="stat"><b id="combo">x0</b><span>CASCADA</span></div><div class="stat"><b id="best">0</b><span>MEJOR</span></div></div><div id="board" class="board"></div><div id="msg" class="msg"><b>Elige un grupo</b><small>Toca un grupo conectado de 3 o más piezas del mismo color.</small></div><button id="retry">Nuevo tablero</button><div class="note">Demo conceptual para iPad y móvil.</div></div><script>const R=8,C=7,K=6;let b=[],used=false,score=0,combo=0,best=+localStorage.getItem('cascadeBest')||0;const E=id=>document.getElementById(id),board=E('board'),msg=E('msg');function rnd(n){return Math.floor(Math.random()*n)}function make(){b=Array.from({length:R},()=>Array.from({length:C},()=>rnd(K)));for(let i=0;i<10;i++){let r=rnd(R),c=rnd(C-1),v=rnd(K);b[r][c]=v;b[r][c+1]=v}used=false;score=combo=0;draw();stats();msg.innerHTML='<b>Elige un grupo</b><small>Solo tienes un toque. Busca la mejor cascada.</small>'}function stats(){E('score').textContent=score;E('combo').textContent='x'+combo;E('best').textContent=best}function draw(){board.innerHTML='';for(let r=0;r<R;r++)for(let c=0;c<C;c++){let d=document.createElement('div');d.className='cell c'+b[r][c];d.onclick=()=>tap(r,c);board.appendChild(d)}}function neigh(r,c){return[[r-1,c],[r+1,c],[r,c-1],[r,c+1]].filter(([x,y])=>x>=0&&x<R&&y>=0&&y<C)}function group(sr,sc){let v=b[sr][sc],q=[[sr,sc]],seen=new Set(),out=[];while(q.length){let [r,c]=q.pop(),k=r+','+c;if(seen.has(k))continue;seen.add(k);if(b[r][c]!==v)continue;out.push([r,c]);neigh(r,c).forEach(n=>q.push(n))}return out}function matches(){let s=new Set();for(let r=0;r<R;r++){let st=0;for(let c=1;c<=C;c++){if(c<C&&b[r][c]===b[r][st])continue;if(c-st>=3)for(let k=st;k<c;k++)s.add(r+','+k);st=c}}for(let c=0;c<C;c++){let st=0;for(let r=1;r<=R;r++){if(r<R&&b[r][c]===b[st][c])continue;if(r-st>=3)for(let k=st;k<r;k++)s.add(k+','+c);st=r}}return[...s].map(x=>x.split(',').map(Number))}function drop(dead){let ds=new Set(dead.map(([r,c])=>r+','+c)),nb=Array.from({length:R},()=>Array(C));for(let c=0;c<C;c++){let vals=[];for(let r=R-1;r>=0;r--)if(!ds.has(r+','+c))vals.push(b[r][c]);while(vals.length<R)vals.push(rnd(K));for(let r=R-1,i=0;r>=0;r--,i++)nb[r][c]=vals[i]}b=nb}function wait(ms){return new Promise(r=>setTimeout(r,ms))}async function explode(cells){while(cells.length){combo++;score+=cells.length*combo;stats();[...board.children].forEach((n,i)=>{let r=Math.floor(i/C),c=i%C;if(cells.some(x=>x[0]===r&&x[1]===c))n.classList.add('boom')});await wait(220);drop(cells);draw();await wait(220);cells=matches()}if(score>best){best=score;localStorage.setItem('cascadeBest',best)}stats();msg.innerHTML='<b>Resultado: '+score+' puntos</b><small>'+combo+' oleadas. Pulsa Nuevo tablero para volver a jugar.</small>'}async function tap(r,c){if(used)return;let g=group(r,c);if(g.length<3){msg.innerHTML='<b>Ese grupo no vale</b><small>Necesitas 3 o más piezas conectadas.</small>';return}used=true;await explode(g)}E('retry').onclick=make;make();</script></body></html>
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b0d12">
+<title>CASCADE</title>
+<style>
+:root{--bg:#0b0d12;--panel:#151922;--panel2:#202633;--text:#f7f9fc;--muted:#8f9bad;--good:#55e38a;--gold:#ffd54a;--cell:62px;--gap:7px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{overscroll-behavior:none}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% -10%,#293248 0,#121621 35%,#0b0d12 72%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;display:flex;justify-content:center;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom)}
+.app{width:min(100%,560px);padding:18px 0 24px}
+.header{text-align:center;position:relative}.logo{font-size:34px;font-weight:900;letter-spacing:.2em;margin:2px 0 3px}.tag{font-size:13px;color:var(--muted)}
+.daily{display:inline-block;margin-top:8px;padding:5px 10px;background:#ffffff0c;border:1px solid #ffffff12;border-radius:999px;color:#c7cfda;font-size:11px;letter-spacing:.08em}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:15px 0 10px}.stat{background:linear-gradient(180deg,#232a38,#1a1f2b);border:1px solid #ffffff0b;border-radius:15px;text-align:center;padding:9px 6px;box-shadow:0 8px 22px #0004}.stat b{font-size:23px;display:block;line-height:1.05}.stat span{display:block;margin-top:4px;font-size:9px;color:var(--muted);letter-spacing:.12em}
+.board-shell{position:relative;background:linear-gradient(180deg,#191e29,#121620);padding:10px;border-radius:23px;border:1px solid #ffffff10;box-shadow:0 22px 55px #0008,inset 0 1px 0 #ffffff09;overflow:hidden}.board{display:grid;grid-template-columns:repeat(7,1fr);gap:var(--gap);position:relative;z-index:2}.cell{aspect-ratio:1;border-radius:18px;position:relative;cursor:pointer;touch-action:manipulation;transform:translateZ(0);transition:transform .12s ease,filter .12s ease,opacity .18s ease;box-shadow:inset 0 2px 0 #ffffff38,inset 0 -5px 0 #0002,0 5px 10px #0003}.cell:before{content:"";position:absolute;left:17%;top:12%;width:38%;height:20%;border-radius:50%;background:#fff4;filter:blur(.3px);transform:rotate(-18deg)}.cell:active{transform:scale(.88)}
+.c0{background:linear-gradient(145deg,#ff6172,#d92b49)}.c1{background:linear-gradient(145deg,#55b2ff,#276be0)}.c2{background:linear-gradient(145deg,#ffe15c,#e8a51d)}.c3{background:linear-gradient(145deg,#6ce68b,#25a958)}.c4{background:linear-gradient(145deg,#bf8bff,#7442d5)}.c5{background:linear-gradient(145deg,#ffac59,#e56724)}
+.valid{animation:breathe 1.7s ease-in-out infinite}@keyframes breathe{50%{filter:brightness(1.14)}}
+.pop{animation:pop .24s ease forwards}@keyframes pop{0%{transform:scale(1);opacity:1}55%{transform:scale(1.32);filter:brightness(1.8)}100%{transform:scale(.02);opacity:0}}
+.drop{animation:drop .28s cubic-bezier(.18,.8,.24,1)}@keyframes drop{from{transform:translateY(-28px);opacity:.45}to{transform:translateY(0);opacity:1}}
+.particle{position:absolute;width:10px;height:10px;border-radius:50%;z-index:8;pointer-events:none;animation:particle .55s ease-out forwards}@keyframes particle{to{transform:translate(var(--dx),var(--dy)) scale(.15);opacity:0}}
+.combo-float{position:absolute;left:50%;top:48%;z-index:20;font-size:46px;font-weight:1000;text-shadow:0 5px 18px #000;pointer-events:none;transform:translate(-50%,-50%) scale(.7);opacity:0}.combo-float.show{animation:combo .6s ease}@keyframes combo{25%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%) scale(.95)}}
+.message{text-align:center;min-height:76px;padding:13px 8px 0}.message b{display:block;font-size:18px}.message small{display:block;color:var(--muted);margin-top:5px;line-height:1.35}.result{color:var(--good)}
+.progress{height:7px;background:#ffffff0d;border-radius:99px;overflow:hidden;margin:4px 4px 0}.progress>i{display:block;width:0;height:100%;background:linear-gradient(90deg,#55e38a,#ffd54a);border-radius:99px;transition:width .6s ease}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}button{appearance:none;border:0;border-radius:14px;padding:13px 10px;font-size:14px;font-weight:800;cursor:pointer}.primary{background:#f7f9fc;color:#10131a}.secondary{background:#232a38;color:#f7f9fc;border:1px solid #ffffff0b}.sound{position:absolute;right:2px;top:2px;width:38px;height:38px;padding:0;border-radius:50%;background:#ffffff0c;color:white;border:1px solid #ffffff10;font-size:17px}.foot{text-align:center;color:#697587;font-size:10px;margin-top:13px}
+@media(max-width:430px){.app{padding-top:10px}.logo{font-size:29px}.stats{margin-top:11px}.stat b{font-size:20px}.board-shell{padding:8px;border-radius:20px}.board{gap:5px}.cell{border-radius:14px}.message{min-height:70px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <button id="sound" class="sound" aria-label="Sonido">🔊</button>
+    <div class="logo">CASCADE</div>
+    <div class="tag">UN TOQUE · MÁXIMA REACCIÓN</div>
+    <div id="daily" class="daily">RETO DIARIO</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b id="score">0</b><span>PUNTOS</span></div>
+    <div class="stat"><b id="combo">x0</b><span>OLEADAS</span></div>
+    <div class="stat"><b id="best">0</b><span>MEJOR PERSONAL</span></div>
+  </div>
+  <div class="board-shell" id="shell">
+    <div id="board" class="board"></div>
+    <div id="comboFloat" class="combo-float">x2</div>
+  </div>
+  <div id="msg" class="message"><b>Encuentra la mejor jugada</b><small>Toca un grupo conectado de 3 o más piezas. Solo tienes un toque.</small></div>
+  <div class="progress"><i id="progress"></i></div>
+  <div class="actions">
+    <button id="retry" class="primary">↻ Repetir reto</button>
+    <button id="new" class="secondary">Otro tablero</button>
+  </div>
+  <div class="foot">Demo de mecánica · En el juego real todos reciben el mismo reto diario.</div>
+</div>
+<script>
+const R=8,C=7,K=6;
+const $=id=>document.getElementById(id),boardEl=$('board'),shell=$('shell'),msg=$('msg');
+let board=[],initial=[],used=false,busy=false,score=0,combo=0,practice=0,soundOn=true,refillSeed=1,bestPossible=0;
+const today=new Date(),dayKey=today.getFullYear()*10000+(today.getMonth()+1)*100+today.getDate();
+$('daily').textContent='RETO DIARIO · '+today.toLocaleDateString('es-ES',{day:'2-digit',month:'short'}).toUpperCase();
+let personal=+localStorage.getItem('cascadePersonal')||0;
+function rng(seed){let s=seed>>>0;return()=>{s=(s+0x6D2B79F5)|0;let t=s;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function clone(x){return x.map(r=>r.slice())}
+function neigh(r,c){return[[r-1,c],[r+1,c],[r,c-1],[r,c+1]].filter(([x,y])=>x>=0&&x<R&&y>=0&&y<C)}
+function groupOn(b,sr,sc){const v=b[sr][sc],q=[[sr,sc]],seen=new Set(),out=[];while(q.length){const [r,c]=q.pop(),k=r+','+c;if(seen.has(k))continue;seen.add(k);if(b[r][c]!==v)continue;out.push([r,c]);neigh(r,c).forEach(n=>q.push(n))}return out}
+function linesOn(b){const s=new Set();for(let r=0;r<R;r++){let st=0;for(let c=1;c<=C;c++){if(c<C&&b[r][c]===b[r][st])continue;if(c-st>=3)for(let k=st;k<c;k++)s.add(r+','+k);st=c}}for(let c=0;c<C;c++){let st=0;for(let r=1;r<=R;r++){if(r<R&&b[r][c]===b[st][c])continue;if(r-st>=3)for(let k=st;k<r;k++)s.add(k+','+c);st=r}}return[...s].map(s=>s.split(',').map(Number))}
+function validGroups(b){const seen=new Set(),out=[];for(let r=0;r<R;r++)for(let c=0;c<C;c++){const k=r+','+c;if(seen.has(k))continue;const g=groupOn(b,r,c);g.forEach(([x,y])=>seen.add(x+','+y));if(g.length>=3)out.push(g)}return out}
+function generate(seed){const rr=rng(seed);for(let tries=0;tries<500;tries++){let b=Array.from({length:R},()=>Array(C).fill(0));for(let r=0;r<R;r++)for(let c=0;c<C;c++){let opts=[0,1,2,3,4,5];if(c>=2&&b[r][c-1]===b[r][c-2])opts=opts.filter(v=>v!==b[r][c-1]);if(r>=2&&b[r-1][c]===b[r-2][c])opts=opts.filter(v=>v!==b[r-1][c]);b[r][c]=opts[Math.floor(rr()*opts.length)]}if(validGroups(b).length>=5)return b}return Array.from({length:R},()=>Array.from({length:C},()=>Math.floor(rr()*K)))}
+function dropOn(b,dead,rr){const ds=new Set(dead.map(([r,c])=>r+','+c)),nb=Array.from({length:R},()=>Array(C));for(let c=0;c<C;c++){const vals=[];for(let r=R-1;r>=0;r--)if(!ds.has(r+','+c))vals.push(b[r][c]);while(vals.length<R)vals.push(Math.floor(rr()*K));for(let r=R-1,i=0;r>=0;r--,i++)nb[r][c]=vals[i]}return nb}
+function simulate(start,g,seed){let b=clone(start),cells=g,total=0,wave=0,rr=rng(seed);for(let guard=0;cells.length&&guard<30;guard++){wave++;total+=cells.length*wave;b=dropOn(b,cells,rr);cells=linesOn(b)}return total}
+function calcBest(){const gs=validGroups(initial);bestPossible=Math.max(...gs.map(g=>simulate(initial,g,refillSeed)),1)}
+function stats(){$('score').textContent=score;$('combo').textContent='x'+combo;$('best').textContent=personal}
+function draw(drop=false){boardEl.innerHTML='';const vg=validGroups(board),valid=new Set(vg.flat().map(([r,c])=>r+','+c));for(let r=0;r<R;r++)for(let c=0;c<C;c++){const d=document.createElement('div');d.className='cell c'+board[r][c]+(valid.has(r+','+c)&&!used?' valid':'')+(drop?' drop':'');d.addEventListener('pointerdown',()=>tap(r,c),{passive:true});boardEl.appendChild(d)}}
+function wait(ms){return new Promise(res=>setTimeout(res,ms))}
+let audioCtx=null;function tone(freq,dur=.07,vol=.035){if(!soundOn)return;try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=freq;o.type='sine';g.gain.value=vol;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);o.stop(audioCtx.currentTime+dur)}catch(e){}}
+function particles(cells){const rect=shell.getBoundingClientRect(),br=boardEl.getBoundingClientRect();cells.slice(0,18).forEach(([r,c],idx)=>{const p=document.createElement('i'),cellNode=boardEl.children[r*C+c],cr=cellNode.getBoundingClientRect();p.className='particle c'+board[r][c];p.style.left=(cr.left-rect.left+cr.width/2-5)+'px';p.style.top=(cr.top-rect.top+cr.height/2-5)+'px';const a=(idx/cells.length)*Math.PI*2,dist=35+Math.random()*45;p.style.setProperty('--dx',Math.cos(a)*dist+'px');p.style.setProperty('--dy',Math.sin(a)*dist+'px');shell.appendChild(p);setTimeout(()=>p.remove(),600)})}
+function showCombo(n){if(n<2)return;const el=$('comboFloat');el.textContent='x'+n;el.classList.remove('show');void el.offsetWidth;el.classList.add('show')}
+async function explode(cells){const rr=rng(refillSeed);while(cells.length&&combo<30){combo++;score+=cells.length*combo;stats();showCombo(combo);tone(300+combo*70,.09,.04);particles(cells);[...boardEl.children].forEach((n,i)=>{const r=Math.floor(i/C),c=i%C;if(cells.some(x=>x[0]===r&&x[1]===c))n.classList.add('pop')});await wait(245);board=dropOn(board,cells,rr);draw(true);await wait(300);cells=linesOn(board)}if(score>personal){personal=score;localStorage.setItem('cascadePersonal',personal)}stats();const pct=Math.min(100,Math.round(score/bestPossible*100));$('progress').style.width=pct+'%';let title=pct===100?'🏆 ¡JUGADA PERFECTA!':pct>=80?'🔥 ¡MUY BUENA!':pct>=55?'✨ Buena cascada':'Puedes sacar mucho más';msg.innerHTML='<b class="result">'+title+'</b><small>'+score+' puntos · '+combo+' oleadas · Has logrado el <strong>'+pct+'%</strong> del mejor resultado de este tablero ('+bestPossible+').</small>';busy=false}
+async function tap(r,c){if(used||busy)return;const g=groupOn(board,r,c);if(g.length<3){tone(120,.08,.025);msg.innerHTML='<b>Ese grupo no vale</b><small>Busca 3 o más piezas del mismo color conectadas por los lados.</small>';return}used=true;busy=true;score=combo=0;$('progress').style.width='0%';await explode(g)}
+function resetSame(){board=clone(initial);used=busy=false;score=combo=0;stats();$('progress').style.width='0%';msg.innerHTML='<b>Encuentra la mejor jugada</b><small>El mejor resultado posible en este tablero existe. ¿Lo encontrarás?</small>';draw()}
+function loadBoard(seed){initial=generate(seed);board=clone(initial);refillSeed=(seed^0xA53C9E17)>>>0;calcBest();resetSame()}
+$('retry').onclick=resetSame;$('new').onclick=()=>{practice++;loadBoard((dayKey+practice*7919)>>>0);$('daily').textContent='MODO PRÁCTICA · TABLERO '+practice};$('sound').onclick=()=>{soundOn=!soundOn;$('sound').textContent=soundOn?'🔊':'🔇';if(soundOn)tone(520)};
+loadBoard(dayKey);
+</script>
+</body>
+</html>
