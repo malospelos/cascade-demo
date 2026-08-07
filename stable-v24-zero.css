@@ -1,0 +1,1 @@
+.cell.water:empty::after{content:"•";font-size:18px;line-height:1;color:#b9ecf6;opacity:.75;text-shadow:0 1px 2px #00384d}.cell.water.auto:empty::after{opacity:.42}.cell.water.shot:empty::after{opacity:.9;color:#d7f8ff}
