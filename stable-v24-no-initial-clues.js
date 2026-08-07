@@ -7,7 +7,8 @@ function clearAutoWaters(s){let changed=false;if(!s||!Array.isArray(s.state))ret
 function applyCampaign(){const s=read(SAVE);if(!s||!freshBoardState(s))return false;if(!clearAutoWaters(s))return false;localStorage.setItem(SAVE,JSON.stringify(s));try{window.__qa?.exitDaily()}catch(e){}return true}
 function applyDaily(){const d=read(DAILY);if(!d||!freshBoardState(d))return false;if(!clearAutoWaters(d))return false;localStorage.setItem(DAILY,JSON.stringify(d));try{window.__qa?.enterDaily()}catch(e){}return true}
 function patchText(root=document){root.querySelectorAll?.('.modal p').forEach(p=>{if(p.textContent.includes('Empiezas con pistas gratuitas'))p.textContent='Empieza explorando el tablero. Cada disparo de agua revelará un número que te ayudará a deducir la posición de la flota.';if(p.textContent.includes('Las zonas empiezan con pistas'))p.textContent='Los barcos no se tocan, ni siquiera en diagonal. Empieza explorando y usa los números que vayas descubriendo para deducir la flota.'})}
+function cleanCampaignSoon(){setTimeout(()=>{applyCampaign();patchText()},120)}
 setTimeout(()=>{applyCampaign();patchText()},80);
-document.addEventListener('click',e=>{if(e.target?.id==='nextZone')setTimeout(()=>{applyCampaign();patchText()},80);if(e.target?.id==='startDaily')setTimeout(()=>{applyDaily();patchText()},80)},true);
+document.addEventListener('click',e=>{if(e.target?.id==='nextZone')cleanCampaignSoon();if(e.target?.id==='confirmNew')cleanCampaignSoon();if(e.target?.id==='startDaily')setTimeout(()=>{applyDaily();patchText()},120)},true);
 const mo=new MutationObserver(()=>patchText());mo.observe(document.getElementById('modalBox')||document.body,{childList:true,subtree:true});
 })();
