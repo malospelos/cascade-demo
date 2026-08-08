@@ -11,19 +11,24 @@ style.textContent=`
 .cascadeShipArt.vertical{transform:translate(-50%,-50%) rotate(90deg)}
 .cascadeBoardSprite{position:absolute;inset:0;background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 3px 5px #001820aa);image-rendering:auto}
 .cascadeShipArt.boss .cascadeBoardSprite{filter:drop-shadow(0 4px 7px #001018cc) drop-shadow(0 0 7px #ffd34d66)}
-.fleetPanel{position:relative!important}
+.fleetPanel{position:relative!important;min-width:116px!important;padding:8px 8px 9px!important;border-radius:15px!important;background:linear-gradient(180deg,#07334ce8,#041e31e8)!important;border:1px solid #8fddec33!important;box-shadow:0 8px 22px #00192366,inset 0 1px 0 #ffffff12!important}
+.fleetLabel{text-align:left!important;padding:0 4px 6px!important;font-size:10px!important;letter-spacing:1.4px!important;color:#d8f7ff!important;text-shadow:0 1px 2px #00131d!important}
 #fleet{display:none!important}
-#cascadeFleetStable{display:flex!important;flex-direction:column;gap:5px!important}
-.cascadeFleetRow{display:flex;align-items:center;gap:4px;min-height:27px;padding:1px 2px;border-radius:7px;background:#062f4666;border:1px solid #ffffff12;overflow:hidden}
-.cascadeFleetRow.sunk{opacity:.34;filter:grayscale(.7)}
-.cascadeFleetThumb{position:relative;flex:0 0 60px;height:20px;overflow:hidden;border-radius:5px}
-.cascadeFleetSprite{position:absolute;inset:0;background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 1px 2px #001820bb);image-rendering:auto}
-.cascadeFleetRow.boss .cascadeFleetThumb{flex-basis:64px;height:22px}
-.cascadeFleetRow.boss .cascadeFleetSprite{filter:drop-shadow(0 1px 3px #001018cc) drop-shadow(0 0 6px #ffd34d77)}
-.cascadeFleetPips{display:flex;gap:2px;flex-wrap:nowrap;min-width:0}
-.cascadeFleetPip{width:5px;height:5px;border-radius:50%;border:1px solid #d6f6ff99;background:#d6f6ff22;box-sizing:border-box}
-.cascadeFleetPip.hit{background:#ff765f;border-color:#ffc0b6}
-.cascadeFleetPip.armor{background:#ffd768;border-color:#fff0a7}
+#cascadeFleetStable{display:flex!important;flex-direction:column;gap:6px!important}
+.cascadeFleetRow{position:relative;display:grid;grid-template-columns:64px 1fr;align-items:center;gap:5px;min-height:38px;padding:4px 5px;border-radius:10px;background:linear-gradient(180deg,#0b4865cc,#07374dcc);border:1px solid #9ce9f433;box-shadow:inset 0 1px 0 #ffffff10;overflow:hidden;transition:opacity .2s ease,filter .2s ease}
+.cascadeFleetRow:after{content:attr(data-status);position:absolute;right:5px;top:4px;font-size:6px;letter-spacing:.6px;font-weight:800;color:#aeeaf5aa}
+.cascadeFleetRow.sunk{opacity:.36;filter:grayscale(.8)}
+.cascadeFleetRow.sunk:after{color:#8ca5adcc}
+.cascadeFleetRow.boss{border-color:#ffd96d55;background:linear-gradient(180deg,#5e4a1f55,#07374dcc)}
+.cascadeFleetThumb{position:relative;width:64px;height:28px;overflow:visible;border-radius:7px}
+.cascadeFleetSprite{position:absolute;left:-3px;right:-3px;top:-4px;bottom:-4px;background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 2px 3px #001820cc);image-rendering:auto}
+.cascadeFleetRow.boss .cascadeFleetSprite{filter:drop-shadow(0 2px 4px #001018dd) drop-shadow(0 0 7px #ffd34d77)}
+.cascadeFleetInfo{display:flex;flex-direction:column;justify-content:center;gap:4px;min-width:0;padding-top:5px}
+.cascadeFleetLen{font-size:8px;font-weight:900;letter-spacing:.4px;color:#dffaff;white-space:nowrap;text-shadow:0 1px 2px #00131d}
+.cascadeFleetPips{display:flex;gap:3px;flex-wrap:nowrap;min-width:0}
+.cascadeFleetPip{width:7px;height:7px;border-radius:50%;border:1px solid #d6f6ffbb;background:#d6f6ff20;box-sizing:border-box;box-shadow:0 0 3px #8fefff22}
+.cascadeFleetPip.hit{background:#ff765f;border-color:#ffc0b6;box-shadow:0 0 5px #ff6b5555}
+.cascadeFleetPip.armor{background:#ffd768;border-color:#fff0a7;box-shadow:0 0 5px #ffd76866}
 .cascadeBossZoneArt,.cascadeBossModalArt{position:relative;overflow:visible;margin-left:auto;margin-right:auto}
 .cascadeBossZoneArt{width:180px;height:60px;margin-top:-6px;margin-bottom:-7px}
 .cascadeBossModalArt{width:min(96%,420px);aspect-ratio:3/1;margin-top:5px;margin-bottom:9px}
@@ -49,8 +54,15 @@ function buildShip(ship,N,cells,layer){
  d.appendChild(sprite(ship.len,'cascadeBoardSprite'));layer.appendChild(d);
 }
 function syncBoard(s){const grid=document.getElementById('grid'),layer=ensureShipLayer();if(!grid||!layer||!s?.N)return;const cells=[...grid.querySelectorAll('.cell')];if(cells.length<s.N*s.N)return;layer.replaceChildren();(s.ships||[]).forEach(ship=>buildShip(ship,s.N,cells,layer));lastBoardKey=boardKey(s);lastGeom=geomKey()}
-function createFleetRow(ship){const row=document.createElement('div');row.className='cascadeFleetRow';row.dataset.ship=String(ship.id);const thumb=document.createElement('div');thumb.className='cascadeFleetThumb';thumb.appendChild(sprite(ship.len,'cascadeFleetSprite'));const pips=document.createElement('div');pips.className='cascadeFleetPips';for(let i=0;i<ship.len;i++){const p=document.createElement('span');p.className='cascadeFleetPip';pips.appendChild(p)}row.append(thumb,pips);return row}
-function updateFleet(s){const f=ensureFleet();if(!f||!s?.ships)return;const shape=JSON.stringify(s.ships.map(x=>[x.id,x.len,x.boss]));if(shape!==lastFleetShape){f.replaceChildren(...s.ships.map(createFleetRow));lastFleetShape=shape}const rows=[...f.querySelectorAll('.cascadeFleetRow')];s.ships.forEach((ship,i)=>{const row=rows[i];if(!row)return;row.classList.toggle('sunk',!!ship.sunk);row.classList.toggle('boss',!!ship.boss);[...row.querySelectorAll('.cascadeFleetPip')].forEach((p,j)=>{const k=ship.cells?.[j]?.join(',');p.classList.toggle('hit',!!(k&&ship.hits?.includes(k)));p.classList.toggle('armor',!!(k&&ship.armor?.includes(k)&&!ship.armorDamage?.[k]))})})}
+function createFleetRow(ship){
+ const row=document.createElement('div');row.className='cascadeFleetRow';row.dataset.ship=String(ship.id);row.dataset.status=ship.sunk?'HUNDIDO':'ACTIVO';
+ const thumb=document.createElement('div');thumb.className='cascadeFleetThumb';thumb.appendChild(sprite(ship.len,'cascadeFleetSprite'));
+ const info=document.createElement('div');info.className='cascadeFleetInfo';
+ const len=document.createElement('div');len.className='cascadeFleetLen';len.textContent=(ship.boss?'TITÁN · ':'')+ship.len+' CASILLAS';
+ const pips=document.createElement('div');pips.className='cascadeFleetPips';for(let i=0;i<ship.len;i++){const p=document.createElement('span');p.className='cascadeFleetPip';pips.appendChild(p)}
+ info.append(len,pips);row.append(thumb,info);return row
+}
+function updateFleet(s){const f=ensureFleet();if(!f||!s?.ships)return;const shape=JSON.stringify(s.ships.map(x=>[x.id,x.len,x.boss]));if(shape!==lastFleetShape){f.replaceChildren(...s.ships.map(createFleetRow));lastFleetShape=shape}const rows=[...f.querySelectorAll('.cascadeFleetRow')];s.ships.forEach((ship,i)=>{const row=rows[i];if(!row)return;row.classList.toggle('sunk',!!ship.sunk);row.classList.toggle('boss',!!ship.boss);row.dataset.status=ship.sunk?'HUNDIDO':'ACTIVO';[...row.querySelectorAll('.cascadeFleetPip')].forEach((p,j)=>{const k=ship.cells?.[j]?.join(',');p.classList.toggle('hit',!!(k&&ship.hits?.includes(k)));p.classList.toggle('armor',!!(k&&ship.armor?.includes(k)&&!ship.armorDamage?.[k]))})})}
 function bossBlock(cls){const d=document.createElement('div');d.className=cls;d.appendChild(sprite(6,'cascadeSprite'));return d}
 function syncBoss(s){const key=(s?.mode||'')+':'+(s?.zone||0);if(key===lastBossKey)return;lastBossKey=key;document.querySelectorAll('.cascadeBossZoneArt').forEach(x=>x.remove());const sub=document.getElementById('zoneSub');if(sub&&s?.mode==='campaign'&&s.zone%5===0)sub.appendChild(bossBlock('cascadeBossZoneArt'))}
 function syncBossModal(){const box=document.getElementById('modalBox');if(box&&/(JEFE|TITÁN)/i.test(box.textContent||'')&&!box.querySelector('.cascadeBossModalArt')){const d=bossBlock('cascadeBossModalArt'),h=box.querySelector('h2');h?h.after(d):box.prepend(d)}}
