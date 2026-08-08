@@ -12,14 +12,19 @@ const replacements=[
   ["hits++;zoneHits++;prof.hits++","hits++;zoneHits++;lastProgressShot=zoneShots;prof.hits++"],
   ["function antiFrustration(){const recentMisses=Math.max(0,zoneShots-zoneHits);if(zoneShots>=5&&recentMisses>0&&zoneShots%5===0){","function antiFrustration(){if(zoneShots-lastProgressShot>=9){"],
   ["revealWater(p[0],p[1],true);showFloat('📡 NUEVA PISTA');render();saveAll()","revealWater(p[0],p[1],true);lastProgressShot=zoneShots;showFloat('📡 NUEVA PISTA');render();saveAll()"],
-  ["coins+=cfg().reward;ammo+=zone<3?3:5;","coins+=cfg().reward;const zBonus=N<=7?4:N<=11?5:6;ammo+=zBonus;"],
+  ["s.sunk=true;ammo+=rewardLen(s.len);revealPerimeter(s);","s.sunk=true;ammo=Math.min(maxAmmo,ammo+rewardLen(s.len));revealPerimeter(s);"],
+  ["coins+=cfg().reward;ammo+=zone<3?3:5;","coins+=cfg().reward;const zBonus=N<=7?4:N<=11?5:6;ammo=Math.min(maxAmmo,ammo+zBonus);"],
   ["BONUS: +${zone<3?3:5} torpedos","BONUS: +${zBonus} torpedos"],
   ["zoneShots=0;zoneHits=0;zoneAidUses=0;return true","zoneShots=0;zoneHits=0;zoneAidUses=0;lastProgressShot=0;return true"],
   ["data-buy=\"sonar\" data-cost=\"100\">100 🏅","data-buy=\"sonar\" data-cost=\"500\">500 🏅"],
   ["data-buy=\"hint\" data-cost=\"150\">150 🏅","data-buy=\"hint\" data-cost=\"750\">750 🏅"],
   ["data-buy=\"depth\" data-cost=\"250\">250 🏅","data-buy=\"depth\" data-cost=\"1250\">1.250 🏅"],
   ["data-buy=\"bombard\" data-cost=\"400\">400 🏅","data-buy=\"bombard\" data-cost=\"2000\">2.000 🏅"],
-  ["data-buy=\"ammo\" data-cost=\"200\">200 🏅","data-buy=\"ammo\" data-cost=\"1000\">1.000 🏅"]
+  ["data-buy=\"ammo\" data-cost=\"200\">200 🏅","data-buy=\"ammo\" data-cost=\"1000\">1.000 🏅"],
+  ["['+3 🚀',()=>ammo+=3]","['+3 🚀',()=>ammo=Math.min(maxAmmo,ammo+3)]"],
+  ["['+5 🚀',()=>ammo+=5]","['+5 🚀',()=>ammo=Math.min(maxAmmo,ammo+5)]"],
+  ["['+1 💣 +3 🚀',()=>{powers.depth++;ammo+=3}]","['+1 💣 +3 🚀',()=>{powers.depth++;ammo=Math.min(maxAmmo,ammo+3)}]"],
+  ["['+10 🚀 + ayudas',()=>{ammo+=10;powers.sonar++;powers.depth++;powers.hint++}]","['+10 🚀 + ayudas',()=>{ammo=Math.min(maxAmmo,ammo+10);powers.sonar++;powers.depth++;powers.hint++}]" ]
 ];
 for(const [from,to] of replacements){
   if(!src.includes(from))throw new Error('Balance patch no encontrado: '+from.slice(0,80));
