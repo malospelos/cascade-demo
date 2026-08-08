@@ -16,20 +16,20 @@ style.textContent=`
 .cascadeShipArt.boss .cascadeHull{background:linear-gradient(180deg,#fff2c2 0%,#ad8a42 17%,#8b9ca1 35%,#3b4b52 67%,#182930 100%);border-color:#ffe58d;box-shadow:0 2px 5px #001821cc,0 0 8px #ffd34d55,inset 0 3px 3px #fff6cc88,inset 0 -4px 5px #00131caa}
 .cascadeShipArt.boss .cascadeHull:before{height:72%;top:-42%;background:linear-gradient(90deg,#775c28,#e9d187 48%,#775c28);border-color:#ffe39a}
 #fleet{display:flex!important;flex-direction:column;gap:5px!important}
-.cascadeFleetRow{display:flex;align-items:center;gap:4px;min-height:30px;padding:2px 2px;border-radius:7px;background:#062f4666;border:1px solid #ffffff12;overflow:hidden}
-.cascadeFleetRow.sunk{opacity:.36;filter:grayscale(.72)}
-.cascadeFleetThumb{position:relative;flex:0 0 52px;height:27px;overflow:hidden;border-radius:5px}
-.cascadeFleetSprite{position:absolute;left:50%;top:50%;width:100%;height:100%;transform:translate(-50%,-50%);background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 1px 2px #001820bb)}
-.cascadeFleetRow.boss .cascadeFleetThumb{flex-basis:56px;height:29px}
-.cascadeFleetRow.boss .cascadeFleetSprite{filter:drop-shadow(0 1px 3px #001018cc) drop-shadow(0 0 5px #ffd34d66)}
+.cascadeFleetRow{display:flex;align-items:center;gap:4px;min-height:31px;padding:1px 2px;border-radius:7px;background:#062f4666;border:1px solid #ffffff12;overflow:hidden}
+.cascadeFleetRow.sunk{opacity:.34;filter:grayscale(.7)}
+.cascadeFleetThumb{position:relative;flex:0 0 55px;height:29px;overflow:hidden;border-radius:5px}
+.cascadeFleetSprite{position:absolute;left:50%;top:50%;width:210%;height:210%;transform:translate(-50%,-50%);background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 1px 2px #001820bb)}
+.cascadeFleetRow.boss .cascadeFleetThumb{flex-basis:58px;height:31px}
+.cascadeFleetRow.boss .cascadeFleetSprite{width:220%;height:220%;filter:drop-shadow(0 1px 3px #001018cc) drop-shadow(0 0 6px #ffd34d77)}
 .cascadeFleetPips{display:flex;gap:2px;flex-wrap:nowrap;min-width:0}
 .cascadeFleetPip{width:5px;height:5px;border-radius:50%;border:1px solid #d6f6ff99;background:#d6f6ff22;box-sizing:border-box}
 .cascadeFleetPip.hit{background:#ff765f;border-color:#ffc0b6}
 .cascadeFleetPip.armor{background:#ffd768;border-color:#fff0a7}
 .cascadeBossZoneArt,.cascadeBossModalArt{position:relative;overflow:hidden;margin-left:auto;margin-right:auto;border-radius:12px}
-.cascadeBossZoneArt{width:164px;height:58px;margin-top:-7px;margin-bottom:-8px}
-.cascadeBossModalArt{width:min(96%,420px);height:132px;margin-top:4px;margin-bottom:8px}
-.cascadeBossZoneArt .cascadeSprite,.cascadeBossModalArt .cascadeSprite{position:absolute;left:50%;top:50%;width:100%;height:100%;transform:translate(-50%,-50%);background-image:url('${ATLAS}');background-size:100% 500%;background-position:center 100%;background-repeat:no-repeat;filter:drop-shadow(0 4px 8px #001018aa)}
+.cascadeBossZoneArt{width:175px;height:62px;margin-top:-7px;margin-bottom:-8px}
+.cascadeBossModalArt{width:min(96%,430px);height:138px;margin-top:4px;margin-bottom:8px}
+.cascadeBossZoneArt .cascadeSprite,.cascadeBossModalArt .cascadeSprite{position:absolute;left:50%;top:50%;width:210%;height:210%;transform:translate(-50%,-50%);background-image:url('${ATLAS}');background-size:100% 500%;background-position:center 100%;background-repeat:no-repeat;filter:drop-shadow(0 4px 8px #001018aa)}
 `;
 document.head.appendChild(style);
 const rowFor=len=>Math.max(0,Math.min(4,len-2))*25;
