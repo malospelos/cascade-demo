@@ -11,20 +11,32 @@ style.textContent=`
 .cascadeShipArt.vertical{transform:translate(-50%,-50%) rotate(90deg)}
 .cascadeBoardSprite{position:absolute;inset:0;background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 3px 5px #001820aa);image-rendering:auto}
 .cascadeShipArt.boss .cascadeBoardSprite{filter:drop-shadow(0 4px 7px #001018cc) drop-shadow(0 0 7px #ffd34d66)}
-.fleetPanel{position:relative!important;min-width:138px!important;padding:10px 10px 12px!important;border-radius:20px!important;background:linear-gradient(180deg,#05263de8,#021726ee)!important;border:1px solid #a5efff2f!important;box-shadow:0 8px 22px #00192366,inset 0 1px 0 #ffffff12!important}
-.fleetLabel{text-align:left!important;padding:2px 6px 8px!important;font-size:13px!important;font-weight:900!important;letter-spacing:2.8px!important;color:#f4fbff!important;text-shadow:0 2px 4px #00131d!important}
+.fleetPanel{position:absolute!important;left:3px!important;top:48%!important;transform:translateY(-50%)!important;width:72px!important;min-width:0!important;padding:6px 4px!important;border:2px solid #0e2130!important;border-radius:13px!important;background:linear-gradient(#083d59ed,#052d43ed)!important;box-shadow:0 8px 18px #00283e88!important;z-index:15!important}
+.fleetLabel{text-align:center!important;padding:0 0 4px!important;font-size:8px!important;font-weight:1000!important;letter-spacing:1px!important;color:#bfe9f5!important;text-shadow:none!important}
 #fleet{display:none!important}
-#cascadeFleetStable{display:flex!important;flex-direction:column;gap:9px!important}
-.cascadeFleetRow{position:relative;display:flex;flex-direction:column;align-items:stretch;gap:7px;min-height:64px;padding:8px 10px 9px;border-radius:16px;background:linear-gradient(180deg,#0c4663e6,#083854e6);border:1px solid #96ebff42;box-shadow:inset 0 1px 0 #ffffff18,0 3px 10px #00162438;overflow:hidden;transition:opacity .2s ease,filter .2s ease,border-color .2s ease,box-shadow .2s ease}
-.cascadeFleetRow::before{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at 18% 18%,#9df8ff12 0%,transparent 46%),linear-gradient(180deg,transparent,#00111b10);pointer-events:none}
-.cascadeFleetRow.sunk{opacity:.42;filter:saturate(.45) brightness(.82)}
-.cascadeFleetRow.boss{border-color:#ffd96d66;background:linear-gradient(180deg,#244f66f0,#0a394de8);box-shadow:inset 0 1px 0 #ffffff18,0 3px 10px #00162438,0 0 0 1px #ffe18c14}
-.cascadeFleetThumb{position:relative;width:100%;height:40px;overflow:visible;border-radius:8px}
-.cascadeFleetSprite{position:absolute;left:0;right:0;top:-6px;bottom:-5px;background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 3px 4px #001820c8) drop-shadow(0 0 10px #8af0ff22);image-rendering:auto}
-.cascadeFleetRow.boss .cascadeFleetSprite{filter:drop-shadow(0 3px 5px #001018d9) drop-shadow(0 0 8px #ffd34d44)}
-.cascadeFleetSegments{display:flex;align-items:center;justify-content:stretch;gap:10px;width:100%;padding:0 2px}
-.cascadeFleetSegment{flex:1 1 0;height:4px;border-radius:999px;background:linear-gradient(180deg,#f8ffff,#c7f5ff 58%,#7ce0ff);box-shadow:0 0 7px #8befff85,0 0 1px #ffffffaa}
-.cascadeFleetRow.sunk .cascadeFleetSegment{background:linear-gradient(180deg,#7ca0ad,#55707d 58%,#365160);box-shadow:0 0 0 transparent,0 0 1px #6f8796aa}
+#cascadeFleetStable{display:flex!important;flex-direction:column!important;gap:3px!important;padding:0!important}
+.cascadeFleetRow{position:relative!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:2px!important;min-height:32px!important;padding:2px 3px 3px!important;border-radius:7px!important;background:#0a425d7a!important;border:1px solid #ffffff10!important;box-shadow:none!important;overflow:hidden!important;transition:opacity .2s ease,filter .2s ease!important}
+.cascadeFleetRow::before{display:none!important}
+.cascadeFleetRow.sunk{opacity:.3!important;filter:grayscale(.8)!important}
+.cascadeFleetRow.boss{border-color:#ffd06633!important;background:#5b292433!important}
+.cascadeFleetThumb{position:relative!important;width:100%!important;height:21px!important;overflow:hidden!important;border-radius:5px!important}
+.cascadeFleetSprite{position:absolute!important;left:-3px!important;right:-3px!important;top:-3px!important;bottom:-3px!important;background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 1px 2px #001820bb)!important;image-rendering:auto}
+.cascadeFleetRow.boss .cascadeFleetSprite{filter:drop-shadow(0 1px 3px #001018cc) drop-shadow(0 0 4px #ffd34d55)!important}
+.cascadeFleetSegments{display:flex!important;align-items:center!important;gap:2px!important;width:100%!important;padding:0 1px!important}
+.cascadeFleetSegment{flex:1 1 0!important;height:2px!important;border-radius:999px!important;background:#d8f8ff!important;box-shadow:0 0 4px #8befff66!important}
+.cascadeFleetRow.sunk .cascadeFleetSegment{background:#55717d!important;box-shadow:none!important}
+@media(max-height:700px){
+ .fleetPanel{width:62px!important;padding:5px 3px!important}
+ .fleetLabel{font-size:7px!important;padding-bottom:3px!important}
+ #cascadeFleetStable{gap:2px!important}
+ .cascadeFleetRow{min-height:28px!important;padding:2px!important}
+ .cascadeFleetThumb{height:18px!important}
+}
+@media(max-width:390px){
+ .fleetPanel{left:1px!important;width:58px!important}
+ .cascadeFleetThumb{height:17px!important}
+ .cascadeFleetSegments{gap:1px!important}
+}
 .cascadeBossZoneArt,.cascadeBossModalArt{position:relative;overflow:visible;margin-left:auto;margin-right:auto}
 .cascadeBossZoneArt{width:180px;height:60px;margin-top:-6px;margin-bottom:-7px}
 .cascadeBossModalArt{width:min(96%,420px);aspect-ratio:3/1;margin-top:5px;margin-bottom:9px}
@@ -62,24 +74,7 @@ function updateFleet(s){
  const shape=JSON.stringify(s.ships.map(x=>[x.id,x.len,x.boss]));
  if(shape!==lastFleetShape){f.replaceChildren(...s.ships.map(createFleetRow));lastFleetShape=shape}
  const rows=[...f.querySelectorAll('.cascadeFleetRow')];
- s.ships.forEach((ship,i)=>{
-  const row=rows[i];if(!row)return;
-  row.classList.toggle('sunk',!!ship.sunk);row.classList.toggle('boss',!!ship.boss);
-  const thumb=row.querySelector('.cascadeFleetThumb');
-  if(thumb){
-   const h=Math.max(38,Math.min(54,26+ship.len*4));
-   thumb.style.height=h+'px';
-   const spriteEl=thumb.querySelector('.cascadeFleetSprite');
-   if(spriteEl){
-    spriteEl.style.backgroundPositionY=rowFor(ship.len)+'%';
-    const extra=Math.max(4,ship.len*2);
-    spriteEl.style.left=(-extra)+'px';
-    spriteEl.style.right=(-extra)+'px';
-    spriteEl.style.top='-'+Math.round(h*.18)+'px';
-    spriteEl.style.bottom='-'+Math.round(h*.10)+'px';
-   }
-  }
- });
+ s.ships.forEach((ship,i)=>{const row=rows[i];if(!row)return;row.classList.toggle('sunk',!!ship.sunk);row.classList.toggle('boss',!!ship.boss)});
 }
 function bossBlock(cls){const d=document.createElement('div');d.className=cls;d.appendChild(sprite(6,'cascadeSprite'));return d}
 function syncBoss(s){const key=(s?.mode||'')+':'+(s?.zone||0);if(key===lastBossKey)return;lastBossKey=key;document.querySelectorAll('.cascadeBossZoneArt').forEach(x=>x.remove());const sub=document.getElementById('zoneSub');if(sub&&s?.mode==='campaign'&&s.zone%5===0)sub.appendChild(bossBlock('cascadeBossZoneArt'))}
