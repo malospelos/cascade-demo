@@ -2,13 +2,10 @@
 'use strict';
 const HQ=window.__CASCADE_ATLAS_HQ||'';
 const ATLAS=HQ.length===72967?HQ:'cascade-ship-atlas.webp?v=1';
-if(HQ&&HQ.length!==72967)console.error('Atlas HQ incompleto:',HQ.length);
 const style=document.createElement('style');
 style.textContent=`
-.boardStage{position:relative!important}
-#grid{position:relative!important}
 #grid .cell.sunk{font-size:0!important;color:transparent!important}
-#cascadeShipLayer{position:absolute;z-index:7;pointer-events:none;overflow:visible}
+#cascadeShipLayer{position:fixed;inset:0;z-index:30;pointer-events:none;overflow:visible}
 .cascadeShipArt{position:absolute;pointer-events:none;transform-origin:center center;overflow:visible}
 .cascadeShipArt.horizontal{transform:translate(-50%,-50%)}
 .cascadeShipArt.vertical{transform:translate(-50%,-50%) rotate(90deg)}
@@ -34,40 +31,30 @@ style.textContent=`
 `;
 document.head.appendChild(style);
 const rowFor=len=>Math.max(0,Math.min(4,len-2))*25;
-let lastBoardKey='',lastGeometryKey='',lastFleetShape='',lastBossKey='';
+let lastBoardKey='',lastGeom='',lastFleetShape='',lastBossKey='';
 function snapshot(){try{return window.__qa?.snapshot?.()}catch(e){return null}}
 function sprite(len,cls){const d=document.createElement('div');d.className=cls;d.style.backgroundPositionY=rowFor(len)+'%';return d}
-function ensureShipLayer(){
- const stage=document.querySelector('.boardStage'),grid=document.getElementById('grid');if(!stage||!grid)return null;
- let layer=document.getElementById('cascadeShipLayer');if(!layer){layer=document.createElement('div');layer.id='cascadeShipLayer';stage.appendChild(layer)}
- const g=grid.getBoundingClientRect(),st=stage.getBoundingClientRect();
- Object.assign(layer.style,{left:(g.left-st.left)+'px',top:(g.top-st.top)+'px',width:g.width+'px',height:g.height+'px'});
- return layer;
-}
+function ensureShipLayer(){let l=document.getElementById('cascadeShipLayer');if(!l){l=document.createElement('div');l.id='cascadeShipLayer';document.body.appendChild(l)}return l}
 function ensureFleet(){const panel=document.querySelector('.fleetPanel');if(!panel)return null;let f=document.getElementById('cascadeFleetStable');if(!f){f=document.createElement('div');f.id='cascadeFleetStable';panel.appendChild(f)}return f}
 function boardKey(s){return JSON.stringify([s?.zone,s?.mode,s?.N,(s?.ships||[]).filter(x=>x.sunk).map(x=>[x.id,x.len,x.boss,x.cells])])}
-function geometryKey(){const grid=document.getElementById('grid');if(!grid)return '';const g=grid.getBoundingClientRect();return [Math.round(g.left),Math.round(g.top),Math.round(g.width),Math.round(g.height)].join(':')}
-function buildShip(s,N,cells,layer){
- if(!s?.sunk||!s.cells?.length)return;
- const els=s.cells.map(([r,c])=>cells[r*N+c]).filter(Boolean);if(els.length!==s.cells.length)return;
- const rs=els.map(e=>e.getBoundingClientRect()),horizontal=s.cells.every(p=>p[0]===s.cells[0][0]);
+function geomKey(){const g=document.getElementById('grid')?.getBoundingClientRect();return g?[Math.round(g.left),Math.round(g.top),Math.round(g.width),Math.round(g.height)].join(':'):''}
+function buildShip(ship,N,cells,layer){
+ if(!ship?.sunk||!ship.cells?.length)return;
+ const els=ship.cells.map(([r,c])=>cells[r*N+c]).filter(Boolean);if(els.length!==ship.cells.length)return;
+ const rs=els.map(e=>e.getBoundingClientRect()),horizontal=ship.cells.every(p=>p[0]===ship.cells[0][0]);
  const minL=Math.min(...rs.map(r=>r.left)),maxR=Math.max(...rs.map(r=>r.right)),minT=Math.min(...rs.map(r=>r.top)),maxB=Math.max(...rs.map(r=>r.bottom));
- const cellW=rs[0].width,cellH=rs[0].height,lr=layer.getBoundingClientRect();
- const cx=(minL+maxR)/2-lr.left,cy=(minT+maxB)/2-lr.top;
- const span=horizontal?(maxR-minL):(maxB-minT);
- const mainSize=span+(horizontal?cellW*.34:cellH*.34);
- const crossSize=Math.max(horizontal?cellH*1.12:cellW*1.12,26);
- const d=document.createElement('div');d.className='cascadeShipArt '+(horizontal?'horizontal':'vertical')+(s.boss?' boss':'');d.dataset.ship=String(s.id);
- Object.assign(d.style,{left:cx+'px',top:cy+'px',width:mainSize+'px',height:crossSize+'px'});
- d.appendChild(sprite(s.len,'cascadeBoardSprite'));layer.appendChild(d);
+ const cellW=rs[0].width,cellH=rs[0].height,span=horizontal?(maxR-minL):(maxB-minT);
+ const d=document.createElement('div');d.className='cascadeShipArt '+(horizontal?'horizontal':'vertical')+(ship.boss?' boss':'');d.dataset.ship=String(ship.id);
+ Object.assign(d.style,{left:((minL+maxR)/2)+'px',top:((minT+maxB)/2)+'px',width:(span+(horizontal?cellW*.18:cellH*.18))+'px',height:Math.max(24,(horizontal?cellH:cellW)*.92)+'px'});
+ d.appendChild(sprite(ship.len,'cascadeBoardSprite'));layer.appendChild(d);
 }
-function syncBoard(s){const grid=document.getElementById('grid'),layer=ensureShipLayer();if(!grid||!layer||!s?.N)return;const cells=[...grid.querySelectorAll('.cell')];if(cells.length<s.N*s.N)return;layer.replaceChildren();(s.ships||[]).forEach(ship=>buildShip(ship,s.N,cells,layer));lastBoardKey=boardKey(s);lastGeometryKey=geometryKey()}
+function syncBoard(s){const grid=document.getElementById('grid'),layer=ensureShipLayer();if(!grid||!layer||!s?.N)return;const cells=[...grid.querySelectorAll('.cell')];if(cells.length<s.N*s.N)return;layer.replaceChildren();(s.ships||[]).forEach(ship=>buildShip(ship,s.N,cells,layer));lastBoardKey=boardKey(s);lastGeom=geomKey()}
 function createFleetRow(ship){const row=document.createElement('div');row.className='cascadeFleetRow';row.dataset.ship=String(ship.id);const thumb=document.createElement('div');thumb.className='cascadeFleetThumb';thumb.appendChild(sprite(ship.len,'cascadeFleetSprite'));const pips=document.createElement('div');pips.className='cascadeFleetPips';for(let i=0;i<ship.len;i++){const p=document.createElement('span');p.className='cascadeFleetPip';pips.appendChild(p)}row.append(thumb,pips);return row}
-function updateFleet(s){const f=ensureFleet();if(!f||!s?.ships)return;const shape=JSON.stringify((s.ships||[]).map(x=>[x.id,x.len,x.boss]));if(shape!==lastFleetShape){f.replaceChildren(...s.ships.map(createFleetRow));lastFleetShape=shape}const rows=[...f.querySelectorAll('.cascadeFleetRow')];s.ships.forEach((ship,i)=>{const row=rows[i];if(!row)return;row.classList.toggle('sunk',!!ship.sunk);row.classList.toggle('boss',!!ship.boss);const pips=[...row.querySelectorAll('.cascadeFleetPip')];pips.forEach((p,j)=>{const k=ship.cells?.[j]?.join(',');p.classList.toggle('hit',!!(k&&ship.hits?.includes(k)));p.classList.toggle('armor',!!(k&&ship.armor?.includes(k)&&!ship.armorDamage?.[k]))})})}
+function updateFleet(s){const f=ensureFleet();if(!f||!s?.ships)return;const shape=JSON.stringify(s.ships.map(x=>[x.id,x.len,x.boss]));if(shape!==lastFleetShape){f.replaceChildren(...s.ships.map(createFleetRow));lastFleetShape=shape}const rows=[...f.querySelectorAll('.cascadeFleetRow')];s.ships.forEach((ship,i)=>{const row=rows[i];if(!row)return;row.classList.toggle('sunk',!!ship.sunk);row.classList.toggle('boss',!!ship.boss);[...row.querySelectorAll('.cascadeFleetPip')].forEach((p,j)=>{const k=ship.cells?.[j]?.join(',');p.classList.toggle('hit',!!(k&&ship.hits?.includes(k)));p.classList.toggle('armor',!!(k&&ship.armor?.includes(k)&&!ship.armorDamage?.[k]))})})}
 function bossBlock(cls){const d=document.createElement('div');d.className=cls;d.appendChild(sprite(6,'cascadeSprite'));return d}
 function syncBoss(s){const key=(s?.mode||'')+':'+(s?.zone||0);if(key===lastBossKey)return;lastBossKey=key;document.querySelectorAll('.cascadeBossZoneArt').forEach(x=>x.remove());const sub=document.getElementById('zoneSub');if(sub&&s?.mode==='campaign'&&s.zone%5===0)sub.appendChild(bossBlock('cascadeBossZoneArt'))}
 function syncBossModal(){const box=document.getElementById('modalBox');if(box&&/(JEFE|TITÁN)/i.test(box.textContent||'')&&!box.querySelector('.cascadeBossModalArt')){const d=bossBlock('cascadeBossModalArt'),h=box.querySelector('h2');h?h.after(d):box.prepend(d)}}
-function tick(){const s=snapshot();if(!s)return;const bk=boardKey(s),gk=geometryKey();if(bk!==lastBoardKey||gk!==lastGeometryKey)syncBoard(s);updateFleet(s);syncBoss(s);syncBossModal()}
-window.addEventListener('resize',()=>{lastGeometryKey='';tick()},{passive:true});
+function tick(){const s=snapshot();if(!s)return;const bk=boardKey(s),gk=geomKey();if(bk!==lastBoardKey||gk!==lastGeom)syncBoard(s);updateFleet(s);syncBoss(s);syncBossModal()}
+window.addEventListener('resize',()=>{lastGeom='';tick()},{passive:true});window.addEventListener('scroll',()=>{lastGeom='';tick()},{passive:true});
 setTimeout(tick,80);setInterval(tick,120);
 })();
