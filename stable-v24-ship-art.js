@@ -15,20 +15,15 @@ style.textContent=`
 .fleetLabel{text-align:left!important;padding:0 4px 6px!important;font-size:10px!important;letter-spacing:1.4px!important;color:#d8f7ff!important;text-shadow:0 1px 2px #00131d!important}
 #fleet{display:none!important}
 #cascadeFleetStable{display:flex!important;flex-direction:column;gap:6px!important}
-.cascadeFleetRow{position:relative;display:grid;grid-template-columns:64px 1fr;align-items:center;gap:5px;min-height:38px;padding:4px 5px;border-radius:10px;background:linear-gradient(180deg,#0b4865cc,#07374dcc);border:1px solid #9ce9f433;box-shadow:inset 0 1px 0 #ffffff10;overflow:hidden;transition:opacity .2s ease,filter .2s ease}
-.cascadeFleetRow:after{content:attr(data-status);position:absolute;right:5px;top:4px;font-size:6px;letter-spacing:.6px;font-weight:800;color:#aeeaf5aa}
+.cascadeFleetRow{position:relative;display:grid;grid-template-columns:64px 1fr;align-items:center;gap:8px;min-height:38px;padding:4px 5px;border-radius:10px;background:linear-gradient(180deg,#0b4865cc,#07374dcc);border:1px solid #9ce9f433;box-shadow:inset 0 1px 0 #ffffff10;overflow:hidden;transition:opacity .2s ease,filter .2s ease}
 .cascadeFleetRow.sunk{opacity:.36;filter:grayscale(.8)}
-.cascadeFleetRow.sunk:after{color:#8ca5adcc}
 .cascadeFleetRow.boss{border-color:#ffd96d55;background:linear-gradient(180deg,#5e4a1f55,#07374dcc)}
 .cascadeFleetThumb{position:relative;width:64px;height:28px;overflow:visible;border-radius:7px}
 .cascadeFleetSprite{position:absolute;left:-3px;right:-3px;top:-4px;bottom:-4px;background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 2px 3px #001820cc);image-rendering:auto}
 .cascadeFleetRow.boss .cascadeFleetSprite{filter:drop-shadow(0 2px 4px #001018dd) drop-shadow(0 0 7px #ffd34d77)}
-.cascadeFleetInfo{display:flex;flex-direction:column;justify-content:center;gap:4px;min-width:0;padding-top:5px}
-.cascadeFleetLen{font-size:8px;font-weight:900;letter-spacing:.4px;color:#dffaff;white-space:nowrap;text-shadow:0 1px 2px #00131d}
-.cascadeFleetPips{display:flex;gap:3px;flex-wrap:nowrap;min-width:0}
-.cascadeFleetPip{width:7px;height:7px;border-radius:50%;border:1px solid #d6f6ffbb;background:#d6f6ff20;box-sizing:border-box;box-shadow:0 0 3px #8fefff22}
-.cascadeFleetPip.hit{background:#ff765f;border-color:#ffc0b6;box-shadow:0 0 5px #ff6b5555}
-.cascadeFleetPip.armor{background:#ffd768;border-color:#fff0a7;box-shadow:0 0 5px #ffd76866}
+.cascadeFleetPips{display:flex;gap:4px;flex-wrap:nowrap;align-items:center;justify-content:flex-start;min-width:0}
+.cascadeFleetPip{width:9px;height:9px;border-radius:50%;border:1px solid #d6f6ffbb;background:#d6f6ff24;box-sizing:border-box;box-shadow:0 0 3px #8fefff22}
+.cascadeFleetPip.hit{background:#ff765f;border-color:#ffc0b6;box-shadow:0 0 6px #ff6b5555}
 .cascadeBossZoneArt,.cascadeBossModalArt{position:relative;overflow:visible;margin-left:auto;margin-right:auto}
 .cascadeBossZoneArt{width:180px;height:60px;margin-top:-6px;margin-bottom:-7px}
 .cascadeBossModalArt{width:min(96%,420px);aspect-ratio:3/1;margin-top:5px;margin-bottom:9px}
@@ -55,14 +50,27 @@ function buildShip(ship,N,cells,layer){
 }
 function syncBoard(s){const grid=document.getElementById('grid'),layer=ensureShipLayer();if(!grid||!layer||!s?.N)return;const cells=[...grid.querySelectorAll('.cell')];if(cells.length<s.N*s.N)return;layer.replaceChildren();(s.ships||[]).forEach(ship=>buildShip(ship,s.N,cells,layer));lastBoardKey=boardKey(s);lastGeom=geomKey()}
 function createFleetRow(ship){
- const row=document.createElement('div');row.className='cascadeFleetRow';row.dataset.ship=String(ship.id);row.dataset.status=ship.sunk?'HUNDIDO':'ACTIVO';
+ const row=document.createElement('div');row.className='cascadeFleetRow';row.dataset.ship=String(ship.id);
  const thumb=document.createElement('div');thumb.className='cascadeFleetThumb';thumb.appendChild(sprite(ship.len,'cascadeFleetSprite'));
- const info=document.createElement('div');info.className='cascadeFleetInfo';
- const len=document.createElement('div');len.className='cascadeFleetLen';len.textContent=(ship.boss?'TITÁN · ':'')+ship.len+' CASILLAS';
- const pips=document.createElement('div');pips.className='cascadeFleetPips';for(let i=0;i<ship.len;i++){const p=document.createElement('span');p.className='cascadeFleetPip';pips.appendChild(p)}
- info.append(len,pips);row.append(thumb,info);return row
+ const pips=document.createElement('div');pips.className='cascadeFleetPips';
+ for(let i=0;i<ship.len;i++){const p=document.createElement('span');p.className='cascadeFleetPip';pips.appendChild(p)}
+ row.append(thumb,pips);return row
 }
-function updateFleet(s){const f=ensureFleet();if(!f||!s?.ships)return;const shape=JSON.stringify(s.ships.map(x=>[x.id,x.len,x.boss]));if(shape!==lastFleetShape){f.replaceChildren(...s.ships.map(createFleetRow));lastFleetShape=shape}const rows=[...f.querySelectorAll('.cascadeFleetRow')];s.ships.forEach((ship,i)=>{const row=rows[i];if(!row)return;row.classList.toggle('sunk',!!ship.sunk);row.classList.toggle('boss',!!ship.boss);row.dataset.status=ship.sunk?'HUNDIDO':'ACTIVO';[...row.querySelectorAll('.cascadeFleetPip')].forEach((p,j)=>{const k=ship.cells?.[j]?.join(',');p.classList.toggle('hit',!!(k&&ship.hits?.includes(k)));p.classList.toggle('armor',!!(k&&ship.armor?.includes(k)&&!ship.armorDamage?.[k]))})})}
+function updateFleet(s){
+ const f=ensureFleet();if(!f||!s?.ships)return;
+ const shape=JSON.stringify(s.ships.map(x=>[x.id,x.len,x.boss]));
+ if(shape!==lastFleetShape){f.replaceChildren(...s.ships.map(createFleetRow));lastFleetShape=shape}
+ const rows=[...f.querySelectorAll('.cascadeFleetRow')];
+ s.ships.forEach((ship,i)=>{
+  const row=rows[i];if(!row)return;
+  row.classList.toggle('sunk',!!ship.sunk);row.classList.toggle('boss',!!ship.boss);
+  const pips=[...row.querySelectorAll('.cascadeFleetPip')];
+  let damage=Array.isArray(ship.hits)?ship.hits.length:0;
+  if(ship.armorDamage&&typeof ship.armorDamage==='object')damage+=Object.values(ship.armorDamage).filter(v=>v>0).length;
+  damage=Math.max(0,Math.min(ship.len,damage));
+  pips.forEach((p,j)=>p.classList.toggle('hit',j<damage));
+ });
+}
 function bossBlock(cls){const d=document.createElement('div');d.className=cls;d.appendChild(sprite(6,'cascadeSprite'));return d}
 function syncBoss(s){const key=(s?.mode||'')+':'+(s?.zone||0);if(key===lastBossKey)return;lastBossKey=key;document.querySelectorAll('.cascadeBossZoneArt').forEach(x=>x.remove());const sub=document.getElementById('zoneSub');if(sub&&s?.mode==='campaign'&&s.zone%5===0)sub.appendChild(bossBlock('cascadeBossZoneArt'))}
 function syncBossModal(){const box=document.getElementById('modalBox');if(box&&/(JEFE|TITÁN)/i.test(box.textContent||'')&&!box.querySelector('.cascadeBossModalArt')){const d=bossBlock('cascadeBossModalArt'),h=box.querySelector('h2');h?h.after(d):box.prepend(d)}}
