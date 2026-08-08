@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const ATLAS='cascade-ship-atlas.webp?v=1';
+const ATLAS='cascade-ship-atlas-hq.webp?v=1';
 const style=document.createElement('style');
 style.textContent=`
 #grid{position:relative!important}
@@ -9,27 +9,26 @@ style.textContent=`
 .cascadeShipArt{position:absolute;z-index:7;pointer-events:none;transform-origin:center center;overflow:visible}
 .cascadeShipArt.horizontal{transform:translate(-50%,-50%)}
 .cascadeShipArt.vertical{transform:translate(-50%,-50%) rotate(90deg)}
-.cascadeBoardSprite{position:absolute;left:50%;top:50%;width:var(--shipZoomX,300%);height:var(--shipZoomY,220%);transform:translate(-50%,-50%);background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 3px 5px #001820aa)}
-.cascadeShipArt.boss .cascadeBoardSprite{width:var(--shipZoomX,320%);height:var(--shipZoomY,235%);filter:drop-shadow(0 4px 7px #001018cc) drop-shadow(0 0 7px #ffd34d66)}
+.cascadeBoardSprite{position:absolute;inset:0;background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 3px 5px #001820aa)}
+.cascadeShipArt.boss .cascadeBoardSprite{filter:drop-shadow(0 4px 7px #001018cc) drop-shadow(0 0 7px #ffd34d66)}
 #fleet{display:flex!important;flex-direction:column;gap:5px!important}
-.cascadeFleetRow{display:flex;align-items:center;gap:4px;min-height:31px;padding:1px 2px;border-radius:7px;background:#062f4666;border:1px solid #ffffff12;overflow:hidden}
+.cascadeFleetRow{display:flex;align-items:center;gap:4px;min-height:27px;padding:1px 2px;border-radius:7px;background:#062f4666;border:1px solid #ffffff12;overflow:hidden}
 .cascadeFleetRow.sunk{opacity:.34;filter:grayscale(.7)}
-.cascadeFleetThumb{position:relative;flex:0 0 55px;height:29px;overflow:hidden;border-radius:5px}
-.cascadeFleetSprite{position:absolute;left:50%;top:50%;width:210%;height:210%;transform:translate(-50%,-50%);background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 1px 2px #001820bb)}
-.cascadeFleetRow.boss .cascadeFleetThumb{flex-basis:58px;height:31px}
-.cascadeFleetRow.boss .cascadeFleetSprite{width:220%;height:220%;filter:drop-shadow(0 1px 3px #001018cc) drop-shadow(0 0 6px #ffd34d77)}
+.cascadeFleetThumb{position:relative;flex:0 0 60px;height:20px;overflow:hidden;border-radius:5px}
+.cascadeFleetSprite{position:absolute;inset:0;background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 1px 2px #001820bb)}
+.cascadeFleetRow.boss .cascadeFleetThumb{flex-basis:64px;height:22px}
+.cascadeFleetRow.boss .cascadeFleetSprite{filter:drop-shadow(0 1px 3px #001018cc) drop-shadow(0 0 6px #ffd34d77)}
 .cascadeFleetPips{display:flex;gap:2px;flex-wrap:nowrap;min-width:0}
 .cascadeFleetPip{width:5px;height:5px;border-radius:50%;border:1px solid #d6f6ff99;background:#d6f6ff22;box-sizing:border-box}
 .cascadeFleetPip.hit{background:#ff765f;border-color:#ffc0b6}
 .cascadeFleetPip.armor{background:#ffd768;border-color:#fff0a7}
-.cascadeBossZoneArt,.cascadeBossModalArt{position:relative;overflow:hidden;margin-left:auto;margin-right:auto;border-radius:12px}
-.cascadeBossZoneArt{width:175px;height:62px;margin-top:-7px;margin-bottom:-8px}
-.cascadeBossModalArt{width:min(96%,430px);height:138px;margin-top:4px;margin-bottom:8px}
-.cascadeBossZoneArt .cascadeSprite,.cascadeBossModalArt .cascadeSprite{position:absolute;left:50%;top:50%;width:210%;height:210%;transform:translate(-50%,-50%);background-image:url('${ATLAS}');background-size:100% 500%;background-position:center 100%;background-repeat:no-repeat;filter:drop-shadow(0 4px 8px #001018aa)}
+.cascadeBossZoneArt,.cascadeBossModalArt{position:relative;overflow:visible;margin-left:auto;margin-right:auto}
+.cascadeBossZoneArt{width:180px;height:60px;margin-top:-6px;margin-bottom:-7px}
+.cascadeBossModalArt{width:min(96%,420px);aspect-ratio:3/1;margin-top:5px;margin-bottom:9px}
+.cascadeBossZoneArt .cascadeSprite,.cascadeBossModalArt .cascadeSprite{position:absolute;inset:0;background-image:url('${ATLAS}');background-size:100% 500%;background-position:center 100%;background-repeat:no-repeat;filter:drop-shadow(0 4px 8px #001018aa)}
 `;
 document.head.appendChild(style);
 const rowFor=len=>Math.max(0,Math.min(4,len-2))*25;
-const boardZoom=len=>({2:[340,235],3:[320,225],4:[305,220],5:[295,215],6:[300,220]}[len]||[305,220]);
 let lastSig='',lastGridCell=null;
 function snapshot(){try{return window.__qa?.snapshot?.()}catch(e){return null}}
 function sig(s){return JSON.stringify([s?.zone,s?.mode,s?.N,(s?.ships||[]).map(x=>[x.id,x.sunk,(x.hits||[]).join('|'),JSON.stringify(x.armorDamage||{})])])}
@@ -39,11 +38,10 @@ function buildShip(s,N,cells,grid,gr){
  const els=s.cells.map(([r,c])=>cells[r*N+c]).filter(Boolean);if(els.length!==s.cells.length)return;
  const rs=els.map(e=>e.getBoundingClientRect()),horizontal=s.cells.every(p=>p[0]===s.cells[0][0]);
  const minL=Math.min(...rs.map(r=>r.left)),maxR=Math.max(...rs.map(r=>r.right)),minT=Math.min(...rs.map(r=>r.top)),maxB=Math.max(...rs.map(r=>r.bottom));
- const cw=rs[0].width,ch=rs[0].height,cx=(minL+maxR)/2-gr.left,cy=(minT+maxB)/2-gr.top;
+ const cw=rs[0].width,cx=(minL+maxR)/2-gr.left,cy=(minT+maxB)/2-gr.top;
  const span=horizontal?(maxR-minL):(maxB-minT);
  const d=document.createElement('div');d.className='cascadeShipArt '+(horizontal?'horizontal':'vertical')+(s.boss?' boss':'');d.dataset.ship=String(s.id);
- const [zx,zy]=boardZoom(s.len);d.style.setProperty('--shipZoomX',zx+'%');d.style.setProperty('--shipZoomY',zy+'%');
- Object.assign(d.style,{left:cx+'px',top:cy+'px',width:Math.max(24,span-cw*.06)+'px',height:Math.max(18,Math.min(cw,ch)*.82)+'px'});
+ Object.assign(d.style,{left:cx+'px',top:cy+'px',width:Math.max(38,span-cw*.05)+'px',height:Math.max(18,span*.31)+'px'});
  d.appendChild(sprite(s.len,'cascadeBoardSprite'));grid.appendChild(d);
 }
 function syncBoard(s){
