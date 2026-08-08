@@ -10,6 +10,7 @@ const replacements=[
   ["lastCell=null;","lastCell=null,lastProgressShot=0;"],
   ["zoneShots=zoneHits=zoneAidUses=0;return true","zoneShots=zoneHits=zoneAidUses=0;lastProgressShot=0;return true"],
   ["hits++;zoneHits++;prof.hits++","hits++;zoneHits++;lastProgressShot=zoneShots;prof.hits++"],
+  ["function normalShot(r,c){if(busy)return;if(!consumeAmmo())","function normalShot(r,c){if(busy)return;if(state[r][c]!==null&&state[r][c].type!=='hint')return;if(!consumeAmmo())"],
   ["function antiFrustration(){const recentMisses=Math.max(0,zoneShots-zoneHits);if(zoneShots>=5&&recentMisses>0&&zoneShots%5===0){","function antiFrustration(){if(zoneShots-lastProgressShot>=9){"],
   ["revealWater(p[0],p[1],true);showFloat('📡 NUEVA PISTA');render();saveAll()","revealWater(p[0],p[1],true);lastProgressShot=zoneShots;showFloat('📡 NUEVA PISTA');render();saveAll()"],
   ["s.sunk=true;ammo+=rewardLen(s.len);revealPerimeter(s);","s.sunk=true;ammo=Math.min(maxAmmo,ammo+rewardLen(s.len));revealPerimeter(s);"],
