@@ -9,8 +9,8 @@ style.textContent=`
 .cascadeShipArt{position:absolute;z-index:7;pointer-events:none;transform-origin:center center;overflow:visible}
 .cascadeShipArt.horizontal{transform:translate(-50%,-50%)}
 .cascadeShipArt.vertical{transform:translate(-50%,-50%) rotate(90deg)}
-.cascadeBoardSprite{position:absolute;left:50%;top:50%;width:128%;height:128%;transform:translate(-50%,-50%);background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 3px 5px #001820aa)}
-.cascadeShipArt.boss .cascadeBoardSprite{width:136%;height:136%;filter:drop-shadow(0 4px 7px #001018cc) drop-shadow(0 0 7px #ffd34d66)}
+.cascadeBoardSprite{position:absolute;left:50%;top:50%;width:var(--shipZoomX,300%);height:var(--shipZoomY,220%);transform:translate(-50%,-50%);background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 3px 5px #001820aa)}
+.cascadeShipArt.boss .cascadeBoardSprite{width:var(--shipZoomX,320%);height:var(--shipZoomY,235%);filter:drop-shadow(0 4px 7px #001018cc) drop-shadow(0 0 7px #ffd34d66)}
 #fleet{display:flex!important;flex-direction:column;gap:5px!important}
 .cascadeFleetRow{display:flex;align-items:center;gap:4px;min-height:31px;padding:1px 2px;border-radius:7px;background:#062f4666;border:1px solid #ffffff12;overflow:hidden}
 .cascadeFleetRow.sunk{opacity:.34;filter:grayscale(.7)}
@@ -29,6 +29,7 @@ style.textContent=`
 `;
 document.head.appendChild(style);
 const rowFor=len=>Math.max(0,Math.min(4,len-2))*25;
+const boardZoom=len=>({2:[340,235],3:[320,225],4:[305,220],5:[295,215],6:[300,220]}[len]||[305,220]);
 let lastSig='',lastGridCell=null;
 function snapshot(){try{return window.__qa?.snapshot?.()}catch(e){return null}}
 function sig(s){return JSON.stringify([s?.zone,s?.mode,s?.N,(s?.ships||[]).map(x=>[x.id,x.sunk,(x.hits||[]).join('|'),JSON.stringify(x.armorDamage||{})])])}
@@ -41,7 +42,8 @@ function buildShip(s,N,cells,grid,gr){
  const cw=rs[0].width,ch=rs[0].height,cx=(minL+maxR)/2-gr.left,cy=(minT+maxB)/2-gr.top;
  const span=horizontal?(maxR-minL):(maxB-minT);
  const d=document.createElement('div');d.className='cascadeShipArt '+(horizontal?'horizontal':'vertical')+(s.boss?' boss':'');d.dataset.ship=String(s.id);
- Object.assign(d.style,{left:cx+'px',top:cy+'px',width:Math.max(24,span-cw*.10)+'px',height:Math.max(18,Math.min(cw,ch)*.78)+'px'});
+ const [zx,zy]=boardZoom(s.len);d.style.setProperty('--shipZoomX',zx+'%');d.style.setProperty('--shipZoomY',zy+'%');
+ Object.assign(d.style,{left:cx+'px',top:cy+'px',width:Math.max(24,span-cw*.06)+'px',height:Math.max(18,Math.min(cw,ch)*.82)+'px'});
  d.appendChild(sprite(s.len,'cascadeBoardSprite'));grid.appendChild(d);
 }
 function syncBoard(s){
