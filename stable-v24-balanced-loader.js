@@ -14,7 +14,12 @@ const replacements=[
   ["revealWater(p[0],p[1],true);showFloat('📡 NUEVA PISTA');render();saveAll()","revealWater(p[0],p[1],true);lastProgressShot=zoneShots;showFloat('📡 NUEVA PISTA');render();saveAll()"],
   ["coins+=cfg().reward;ammo+=zone<3?3:5;","coins+=cfg().reward;const zBonus=N<=7?4:N<=11?5:6;ammo+=zBonus;"],
   ["BONUS: +${zone<3?3:5} torpedos","BONUS: +${zBonus} torpedos"],
-  ["zoneShots=0;zoneHits=0;zoneAidUses=0;return true","zoneShots=0;zoneHits=0;zoneAidUses=0;lastProgressShot=0;return true"]
+  ["zoneShots=0;zoneHits=0;zoneAidUses=0;return true","zoneShots=0;zoneHits=0;zoneAidUses=0;lastProgressShot=0;return true"],
+  ["data-buy=\"sonar\" data-cost=\"100\">100 🏅","data-buy=\"sonar\" data-cost=\"500\">500 🏅"],
+  ["data-buy=\"hint\" data-cost=\"150\">150 🏅","data-buy=\"hint\" data-cost=\"750\">750 🏅"],
+  ["data-buy=\"depth\" data-cost=\"250\">250 🏅","data-buy=\"depth\" data-cost=\"1250\">1.250 🏅"],
+  ["data-buy=\"bombard\" data-cost=\"400\">400 🏅","data-buy=\"bombard\" data-cost=\"2000\">2.000 🏅"],
+  ["data-buy=\"ammo\" data-cost=\"200\">200 🏅","data-buy=\"ammo\" data-cost=\"1000\">1.000 🏅"]
 ];
 for(const [from,to] of replacements){
   if(!src.includes(from))throw new Error('Balance patch no encontrado: '+from.slice(0,80));
