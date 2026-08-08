@@ -3,44 +3,42 @@
 const style=document.createElement('style');
 style.textContent=`
 @media (orientation:landscape){
-  .fleetPanel{left:8px!important;top:50%!important;transform:translateY(-50%)!important;width:118px!important;min-width:0!important;padding:7px!important;border-radius:16px!important}
-  .fleetLabel{font-size:10px!important;letter-spacing:2px!important;padding:1px 4px 6px!important}
-  #cascadeFleetStable{display:flex!important;flex-direction:column!important;gap:5px!important;padding:0!important;overflow:visible!important}
-  .cascadeFleetRow{min-height:48px!important;padding:5px 6px 6px!important;gap:4px!important;border-radius:11px!important}
-  .cascadeFleetThumb{height:30px!important}
-  .cascadeFleetSegments{gap:5px!important;padding:0 1px!important}
-  .cascadeFleetSegment{height:3px!important}
+  .fleetPanel{left:5px!important;top:50%!important;transform:translateY(-50%)!important;width:92px!important;min-width:0!important;padding:5px!important;border-radius:13px!important}
+  .fleetLabel{font-size:8px!important;letter-spacing:1.5px!important;padding:0 2px 4px!important}
+  #cascadeFleetStable{display:flex!important;flex-direction:column!important;gap:4px!important;padding:0!important;overflow:visible!important}
+  .cascadeFleetRow{min-height:38px!important;padding:3px 4px 4px!important;gap:2px!important;border-radius:9px!important}
+  .cascadeFleetThumb{height:23px!important}
+  .cascadeFleetSegments{gap:3px!important;padding:0!important}
+  .cascadeFleetSegment{height:2px!important}
 }
 @media (orientation:landscape) and (max-height:700px){
-  .fleetPanel{width:104px!important;left:5px!important;padding:5px!important}
-  .fleetLabel{font-size:9px!important;padding-bottom:4px!important}
-  #cascadeFleetStable{gap:4px!important}
-  .cascadeFleetRow{min-height:41px!important;padding:3px 5px 4px!important;gap:3px!important}
-  .cascadeFleetThumb{height:24px!important}
-  .cascadeFleetSegments{gap:4px!important}
+  .fleetPanel{width:82px!important;left:3px!important;padding:4px!important}
+  .fleetLabel{font-size:7px!important;padding-bottom:3px!important}
+  #cascadeFleetStable{gap:3px!important}
+  .cascadeFleetRow{min-height:34px!important;padding:2px 3px 3px!important}
+  .cascadeFleetThumb{height:20px!important}
+  .cascadeFleetSegments{gap:2px!important}
 }
 @media (orientation:portrait){
-  .fleetPanel{left:50%!important;top:30px!important;transform:translateX(-50%)!important;width:calc(100% - 20px)!important;min-width:0!important;padding:7px 8px 8px!important;border-radius:15px!important}
-  .fleetLabel{position:static!important;transform:none!important;text-align:center!important;padding:0 0 6px!important;font-size:10px!important;letter-spacing:2px!important}
-  #cascadeFleetStable{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(92px,1fr))!important;gap:6px!important;padding:0!important;overflow:visible!important}
-  .cascadeFleetRow{min-width:0!important;min-height:50px!important;padding:4px 6px 5px!important;gap:3px!important;border-radius:11px!important}
-  .cascadeFleetThumb{height:28px!important}
-  .cascadeFleetSegments{gap:4px!important;padding:0!important}
-  .cascadeFleetSegment{height:3px!important}
+  .fleetPanel{left:50%!important;top:26px!important;transform:translateX(-50%)!important;width:calc(100% - 16px)!important;min-width:0!important;padding:4px 5px 5px!important;border-radius:12px!important}
+  .fleetLabel{position:static!important;transform:none!important;text-align:center!important;padding:0 0 3px!important;font-size:8px!important;letter-spacing:1.5px!important;line-height:1!important}
+  #cascadeFleetStable{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important;padding:0!important;overflow:visible!important}
+  .cascadeFleetRow{min-width:0!important;min-height:36px!important;padding:2px 3px 3px!important;gap:2px!important;border-radius:8px!important}
+  .cascadeFleetThumb{height:20px!important}
+  .cascadeFleetSegments{gap:2px!important;padding:0!important}
+  .cascadeFleetSegment{height:2px!important}
 }
-@media (orientation:portrait) and (max-width:600px){
-  .fleetPanel{top:28px!important;width:calc(100% - 14px)!important;padding:6px 7px 7px!important}
-  .fleetLabel{font-size:9px!important;padding-bottom:5px!important}
-  #cascadeFleetStable{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important}
-  .cascadeFleetRow{min-height:44px!important;padding:3px 5px 4px!important}
-  .cascadeFleetThumb{height:24px!important}
-  .cascadeFleetSegments{gap:3px!important}
+@media (orientation:portrait) and (max-width:430px){
+  .fleetPanel{top:24px!important;padding:3px 4px 4px!important}
+  .fleetLabel{font-size:7px!important;padding-bottom:2px!important}
+  #cascadeFleetStable{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:3px!important}
+  .cascadeFleetRow{min-height:32px!important;padding:2px 3px!important}
+  .cascadeFleetThumb{height:17px!important}
+  .cascadeFleetSegments{gap:2px!important}
+  .cascadeFleetSegment{height:2px!important}
 }
-@media (orientation:portrait) and (max-width:390px){
-  .fleetPanel{top:26px!important;padding:5px 6px 6px!important}
-  #cascadeFleetStable{gap:4px!important}
-  .cascadeFleetRow{min-height:40px!important;padding:3px 4px!important}
-  .cascadeFleetThumb{height:21px!important}
+@media (orientation:portrait) and (max-width:340px){
+  #cascadeFleetStable{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 }
 `;
 document.head.appendChild(style);
@@ -53,19 +51,19 @@ function reserveSpace(){
  const f=fleet.getBoundingClientRect();
  const portrait=window.matchMedia('(orientation:portrait)').matches;
  if(portrait){
-  const top=Math.max(86,Math.ceil(f.bottom-p.top+12));
-  const side=window.innerWidth<=390?50:(window.innerWidth<=600?54:62);
+  const top=Math.max(58,Math.ceil(f.bottom-p.top+8));
+  const side=window.innerWidth<=390?46:(window.innerWidth<=600?50:58);
   stage.style.setProperty('top',top+'px','important');
   stage.style.setProperty('left',side+'px','important');
   stage.style.setProperty('right',side+'px','important');
-  stage.style.setProperty('bottom',window.innerWidth<=390?'48px':'54px','important');
+  stage.style.setProperty('bottom',window.innerWidth<=390?'46px':'50px','important');
  }else{
-  const left=Math.max(72,Math.ceil(f.right-p.left+12));
-  const right=window.innerHeight<=700?62:78;
+  const left=Math.max(58,Math.ceil(f.right-p.left+8));
+  const right=window.innerHeight<=700?58:70;
   stage.style.setProperty('left',left+'px','important');
   stage.style.setProperty('right',right+'px','important');
-  stage.style.setProperty('top','8px','important');
-  stage.style.setProperty('bottom',window.innerHeight<=700?'50px':'58px','important');
+  stage.style.setProperty('top','6px','important');
+  stage.style.setProperty('bottom',window.innerHeight<=700?'48px':'54px','important');
  }
 }
 let ro;
