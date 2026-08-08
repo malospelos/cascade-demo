@@ -16,22 +16,23 @@ style.textContent=`
 .cascadeShipArt.boss .cascadeHull{background:linear-gradient(180deg,#fff2c2 0%,#ad8a42 17%,#8b9ca1 35%,#3b4b52 67%,#182930 100%);border-color:#ffe58d;box-shadow:0 2px 5px #001821cc,0 0 8px #ffd34d55,inset 0 3px 3px #fff6cc88,inset 0 -4px 5px #00131caa}
 .cascadeShipArt.boss .cascadeHull:before{height:72%;top:-42%;background:linear-gradient(90deg,#775c28,#e9d187 48%,#775c28);border-color:#ffe39a}
 #fleet{display:flex!important;flex-direction:column;gap:5px!important}
-.cascadeFleetRow{display:flex;align-items:center;gap:5px;min-height:25px;padding:2px 3px;border-radius:7px;background:#062f4666;border:1px solid #ffffff12;overflow:hidden}
-.cascadeFleetRow.sunk{opacity:.34;filter:grayscale(.85)}
-.cascadeFleetThumb{position:relative;flex:0 0 48px;height:20px}
-.cascadeFleetThumb .miniHull{position:absolute;left:2px;right:2px;top:5px;bottom:3px;border-radius:55% 48% 48% 55%/52% 48% 48% 52%;background:linear-gradient(180deg,#dce8eb,#73868e 45%,#263941 100%);border:1px solid #cce9ee;box-shadow:0 1px 2px #001821aa}
-.cascadeFleetThumb .miniHull:before{content:'';position:absolute;width:18%;height:65%;left:43%;top:-45%;border-radius:4px 4px 2px 2px;background:#9fafb5;border:1px solid #d9edef}
-.cascadeFleetRow.boss .miniHull{background:linear-gradient(180deg,#f4df9a,#9f8545 24%,#687980 48%,#263941 100%);border-color:#ffe597;box-shadow:0 0 5px #ffd34d55}
+.cascadeFleetRow{display:flex;align-items:center;gap:4px;min-height:30px;padding:2px 2px;border-radius:7px;background:#062f4666;border:1px solid #ffffff12;overflow:hidden}
+.cascadeFleetRow.sunk{opacity:.36;filter:grayscale(.72)}
+.cascadeFleetThumb{position:relative;flex:0 0 52px;height:27px;overflow:hidden;border-radius:5px}
+.cascadeFleetSprite{position:absolute;left:50%;top:50%;width:100%;height:100%;transform:translate(-50%,-50%);background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 1px 2px #001820bb)}
+.cascadeFleetRow.boss .cascadeFleetThumb{flex-basis:56px;height:29px}
+.cascadeFleetRow.boss .cascadeFleetSprite{filter:drop-shadow(0 1px 3px #001018cc) drop-shadow(0 0 5px #ffd34d66)}
 .cascadeFleetPips{display:flex;gap:2px;flex-wrap:nowrap;min-width:0}
-.cascadeFleetPip{width:6px;height:6px;border-radius:50%;border:1px solid #d6f6ff99;background:#d6f6ff22;box-sizing:border-box}
+.cascadeFleetPip{width:5px;height:5px;border-radius:50%;border:1px solid #d6f6ff99;background:#d6f6ff22;box-sizing:border-box}
 .cascadeFleetPip.hit{background:#ff765f;border-color:#ffc0b6}
 .cascadeFleetPip.armor{background:#ffd768;border-color:#fff0a7}
 .cascadeBossZoneArt,.cascadeBossModalArt{position:relative;overflow:hidden;margin-left:auto;margin-right:auto;border-radius:12px}
-.cascadeBossZoneArt{width:142px;height:50px;margin-top:-5px;margin-bottom:-8px}
-.cascadeBossModalArt{width:min(96%,380px);height:115px;margin-top:4px;margin-bottom:8px}
+.cascadeBossZoneArt{width:164px;height:58px;margin-top:-7px;margin-bottom:-8px}
+.cascadeBossModalArt{width:min(96%,420px);height:132px;margin-top:4px;margin-bottom:8px}
 .cascadeBossZoneArt .cascadeSprite,.cascadeBossModalArt .cascadeSprite{position:absolute;left:50%;top:50%;width:100%;height:100%;transform:translate(-50%,-50%);background-image:url('${ATLAS}');background-size:100% 500%;background-position:center 100%;background-repeat:no-repeat;filter:drop-shadow(0 4px 8px #001018aa)}
 `;
 document.head.appendChild(style);
+const rowFor=len=>Math.max(0,Math.min(4,len-2))*25;
 let lastSig='',lastGridCell=null;
 function snapshot(){try{return window.__qa?.snapshot?.()}catch(e){return null}}
 function sig(s){return JSON.stringify([s?.zone,s?.mode,s?.N,(s?.ships||[]).map(x=>[x.id,x.sunk,(x.hits||[]).join('|'),JSON.stringify(x.armorDamage||{})])])}
@@ -57,7 +58,8 @@ function syncFleet(s){
  f.querySelectorAll('.cascadeFleetRow').forEach(x=>x.remove());
  (s.ships||[]).forEach(ship=>{
   const row=document.createElement('div');row.className='cascadeFleetRow'+(ship.sunk?' sunk':'')+(ship.boss?' boss':'');
-  const thumb=document.createElement('div');thumb.className='cascadeFleetThumb';const hull=document.createElement('div');hull.className='miniHull';thumb.appendChild(hull);
+  const thumb=document.createElement('div');thumb.className='cascadeFleetThumb';
+  const sprite=document.createElement('div');sprite.className='cascadeFleetSprite';sprite.style.backgroundPositionY=rowFor(ship.len)+'%';thumb.appendChild(sprite);
   const pips=document.createElement('div');pips.className='cascadeFleetPips';
   for(let i=0;i<ship.len;i++){const p=document.createElement('span');p.className='cascadeFleetPip';const k=ship.cells?.[i]?.join(',');if(k&&ship.hits?.includes(k))p.classList.add('hit');else if(k&&ship.armor?.includes(k)&&!ship.armorDamage?.[k])p.classList.add('armor');pips.appendChild(p)}
   row.append(thumb,pips);f.appendChild(row);
