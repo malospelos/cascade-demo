@@ -1,6 +1,8 @@
 (()=>{
 'use strict';
-const ATLAS='cascade-ship-atlas-hq.webp?v=1';
+const HQ=window.__CASCADE_ATLAS_HQ||'';
+const ATLAS=HQ.length===72967?HQ:'cascade-ship-atlas.webp?v=1';
+if(HQ&&HQ.length!==72967)console.error('Atlas HQ incompleto:',HQ.length);
 const style=document.createElement('style');
 style.textContent=`
 #grid{position:relative!important}
@@ -9,13 +11,13 @@ style.textContent=`
 .cascadeShipArt{position:absolute;z-index:7;pointer-events:none;transform-origin:center center;overflow:visible}
 .cascadeShipArt.horizontal{transform:translate(-50%,-50%)}
 .cascadeShipArt.vertical{transform:translate(-50%,-50%) rotate(90deg)}
-.cascadeBoardSprite{position:absolute;inset:0;background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 3px 5px #001820aa)}
+.cascadeBoardSprite{position:absolute;inset:0;background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 3px 5px #001820aa);image-rendering:auto}
 .cascadeShipArt.boss .cascadeBoardSprite{filter:drop-shadow(0 4px 7px #001018cc) drop-shadow(0 0 7px #ffd34d66)}
 #fleet{display:flex!important;flex-direction:column;gap:5px!important}
 .cascadeFleetRow{display:flex;align-items:center;gap:4px;min-height:27px;padding:1px 2px;border-radius:7px;background:#062f4666;border:1px solid #ffffff12;overflow:hidden}
 .cascadeFleetRow.sunk{opacity:.34;filter:grayscale(.7)}
 .cascadeFleetThumb{position:relative;flex:0 0 60px;height:20px;overflow:hidden;border-radius:5px}
-.cascadeFleetSprite{position:absolute;inset:0;background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 1px 2px #001820bb)}
+.cascadeFleetSprite{position:absolute;inset:0;background-image:url('${ATLAS}');background-size:100% 500%;background-repeat:no-repeat;background-position-x:center;filter:drop-shadow(0 1px 2px #001820bb);image-rendering:auto}
 .cascadeFleetRow.boss .cascadeFleetThumb{flex-basis:64px;height:22px}
 .cascadeFleetRow.boss .cascadeFleetSprite{filter:drop-shadow(0 1px 3px #001018cc) drop-shadow(0 0 6px #ffd34d77)}
 .cascadeFleetPips{display:flex;gap:2px;flex-wrap:nowrap;min-width:0}
@@ -25,7 +27,7 @@ style.textContent=`
 .cascadeBossZoneArt,.cascadeBossModalArt{position:relative;overflow:visible;margin-left:auto;margin-right:auto}
 .cascadeBossZoneArt{width:180px;height:60px;margin-top:-6px;margin-bottom:-7px}
 .cascadeBossModalArt{width:min(96%,420px);aspect-ratio:3/1;margin-top:5px;margin-bottom:9px}
-.cascadeBossZoneArt .cascadeSprite,.cascadeBossModalArt .cascadeSprite{position:absolute;inset:0;background-image:url('${ATLAS}');background-size:100% 500%;background-position:center 100%;background-repeat:no-repeat;filter:drop-shadow(0 4px 8px #001018aa)}
+.cascadeBossZoneArt .cascadeSprite,.cascadeBossModalArt .cascadeSprite{position:absolute;inset:0;background-image:url('${ATLAS}');background-size:100% 500%;background-position:center 100%;background-repeat:no-repeat;filter:drop-shadow(0 4px 8px #001018aa);image-rendering:auto}
 `;
 document.head.appendChild(style);
 const rowFor=len=>Math.max(0,Math.min(4,len-2))*25;
@@ -41,7 +43,7 @@ function buildShip(s,N,cells,grid,gr){
  const cw=rs[0].width,cx=(minL+maxR)/2-gr.left,cy=(minT+maxB)/2-gr.top;
  const span=horizontal?(maxR-minL):(maxB-minT);
  const d=document.createElement('div');d.className='cascadeShipArt '+(horizontal?'horizontal':'vertical')+(s.boss?' boss':'');d.dataset.ship=String(s.id);
- Object.assign(d.style,{left:cx+'px',top:cy+'px',width:Math.max(38,span-cw*.05)+'px',height:Math.max(18,span*.31)+'px'});
+ Object.assign(d.style,{left:cx+'px',top:cy+'px',width:Math.max(38,span-cw*.05)+'px',height:Math.max(18,span/3)+'px'});
  d.appendChild(sprite(s.len,'cascadeBoardSprite'));grid.appendChild(d);
 }
 function syncBoard(s){
